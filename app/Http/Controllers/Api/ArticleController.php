@@ -18,4 +18,15 @@ class ArticleController extends Controller
     {
         return ArticleCollection::make(Article::all());
     }
+
+    public function create(): ArticleResource
+    {
+        $article = Article::create([
+            'title' => request('data.attributes.title'),
+            'slug' => request('data.attributes.slug'),
+            'content' => request('data.attributes.content'),
+        ]);
+
+        return ArticleResource::make($article);
+    }
 }
