@@ -16,6 +16,7 @@ class ValidateJsonApiHeader
      */
     public function handle(Request $request, Closure $next)
     {
+        // dd($request->header());
         if ($request->header('accept') !== 'application/vnd.api+json') {
             throw new HttpException(406, __('Not Acceptable'));
         }
@@ -27,7 +28,7 @@ class ValidateJsonApiHeader
         }
 
         return $next($request)->withHeaders([
-            'Content-Type' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
         ]);
     }
 }
