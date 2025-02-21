@@ -51,4 +51,69 @@ class CreateArticleTest extends TestCase
             ]
         ]);
     }
+
+    /** @test */
+    public function title_is_required(): void
+    {
+        $response = $this->postJson(route('api.v1.articles.create'), [
+            'data' => [
+                'type' => 'articles',
+                'attributes' => [
+                    'slug' => 'my-first-article',
+                    'content' => 'Content of my first article',
+                ],
+            ],
+        ]);
+
+        $response->assertJsonValidationErrors('data.attributes.title');
+    }
+
+    /** @test */
+    public function slug_is_required(): void
+    {
+        $response = $this->postJson(route('api.v1.articles.create'), [
+            'data' => [
+                'type' => 'articles',
+                'attributes' => [
+                    'title' => 'My First Article',
+                    'content' => 'Content of my first article',
+                ],
+            ],
+        ]);
+
+        $response->assertJsonValidationErrors('data.attributes.slug');
+    }
+
+    /** @test */
+    public function content_is_required(): void
+    {
+        $response = $this->postJson(route('api.v1.articles.create'), [
+            'data' => [
+                'type' => 'articles',
+                'attributes' => [
+                    'title' => 'My First Article',
+                    'slug' => 'my-first-article',
+                ],
+            ],
+        ]);
+
+        $response->assertJsonValidationErrors('data.attributes.content');
+    }
+
+    /** @test */
+    public function title_must_be_at_least_4_characters(): void
+    {
+        $response = $this->postJson(route('api.v1.articles.create'), [
+            'data' => [
+                'type' => 'articles',
+                'attributes' => [
+                    'title' => 'My',
+                    'slug' => 'my-first-article',
+                    'content' => 'Content of my first article',
+                ],
+            ],
+        ]);
+
+        $response->assertJsonValidationErrors('data.attributes.title');
+    }
 }

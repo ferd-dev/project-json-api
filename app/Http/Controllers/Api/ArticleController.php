@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ArticleCollection;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
+use Illuminate\Http\Request;
 
 class ArticleController extends Controller
 {
@@ -19,12 +20,18 @@ class ArticleController extends Controller
         return ArticleCollection::make(Article::all());
     }
 
-    public function create(): ArticleResource
+    public function create(Request $request): ArticleResource
     {
+        $request->validate([
+            'data.attributes.title' => ['required', 'min:4'],
+            'data.attributes.slug' => ['required'],
+            'data.attributes.content' => ['required'],
+        ]);
+
         $article = Article::create([
-            'title' => request('data.attributes.title'),
-            'slug' => request('data.attributes.slug'),
-            'content' => request('data.attributes.content'),
+            'title' => $request->input('data.attributes.title'),
+            'slug' => $request->input('data.attributes.slug'),
+            'content' => $request->input('data.attributes.content'),
         ]);
 
         return ArticleResource::make($article);
