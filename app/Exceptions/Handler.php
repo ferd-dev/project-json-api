@@ -38,7 +38,7 @@ class Handler extends ExceptionHandler
 
         foreach ($exception->errors() as $key => $message) {
             $pointer = "/" . str_replace('.', '/', $key);
-            $errors[$key] = [
+            $errors[] = [
                 'title' => $title,
                 'detail' => $message[0],
                 'source' => [
