@@ -2,7 +2,10 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -26,5 +29,26 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    protected function invalidJson($request, ValidationException $exception)
+    {
+        $title = $exception->getMessage();
+        $errors = [];
+
+        foreach ($exception->errors() as $key => $message) {
+            $pointer = "/" . str_replace('.', '/', $key);
+            $errors[$key] = [
+                'title' => $title,
+                'detail' => $message[0],
+                'source' => [
+                    'pointer' => $pointer,
+                ],
+            ];
+        }
+
+        return response()->json([
+            'errors' => $errors,
+        ], 422);
     }
 }

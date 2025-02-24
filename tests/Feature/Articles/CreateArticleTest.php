@@ -5,11 +5,42 @@ namespace Tests\Feature\Articles;
 use App\Models\Article;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Testing\TestResponse;
 use Tests\TestCase;
 
 class CreateArticleTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        TestResponse::macro(
+            'assertJsonValidationErrors',
+            function ($attribute) {
+                /** @var TestResponse $this */
+                $this->assertJsonStructure([
+                    'errors' => [
+                        [
+                            'title',
+                            'detail',
+                            'source' => [
+                                'pointer'
+                            ],
+                        ],
+                    ],
+                ])->assertJsonFragment([
+                    'source' => [
+                        'pointer' => '/data/attributes/' . $attribute,
+                    ],
+                ])->assertHeader(
+                    'content-type',
+                    'application/vnd.api+json'
+                )->assertStatus(422);
+            }
+        );
+    }
 
     /** @test */
     public function can_create_articles(): void
